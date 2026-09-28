@@ -2,13 +2,13 @@
 <html lang="pt-PT">
 <head>
 <meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src https://api.pwnedpasswords.com; manifest-src 'self'; worker-src 'self'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="dark">
 <title>PassKing — Gerador e Analisador de Passwords</title>
 
-<!-- Tailwind online. A app continua utilizável sem esta ligação graças ao CSS embebido abaixo. -->
-<script src="https://cdn.tailwindcss.com" defer onerror="document.documentElement.classList.add('tailwind-offline')"></script>
 <link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="theme-color" content="#0f172a">
 <style>
 :root{
@@ -90,7 +90,7 @@ button,input,select{font:inherit}.shell{max-width:1180px;margin:auto;padding:28p
   <div id="opts-wifi" class="stack hidden" style="margin-top:18px">
     <div class="row wrap gap8"><button class="mode-btn active-choice" data-wifi="hex" type="button">Chave hexadecimal</button><button class="mode-btn" data-wifi="words" type="button">Passphrase Wi‑Fi</button></div>
     <div id="wifiHexSize"><div class="row between"><label for="wifiHexLength">Comprimento hexadecimal</label><span id="wifiHexLengthVal" class="mono" style="color:var(--brass2)">64</span></div><input id="wifiHexLength" type="range" min="8" max="64" value="64"></div>
-    <div id="wifiWordSize" class="hidden"><div class="row between"><label for="wifiWordCount">Número de palavras</label><span id="wifiWordCountVal" class="mono" style="color:var(--brass2)">8</span></div><input id="wifiWordCount" type="range" min="4" max="12" value="8"></div>
+    <div id="wifiWordSize" class="hidden"><div class="row between"><label for="wifiWordCount">Número de palavras</label><span id="wifiWordCountVal" class="mono" style="color:var(--brass2)">8</span></div><input id="wifiWordCount" type="range" min="4" max="9" value="8"></div>
     <div class="alert info"><span>ℹ️</span><span>Com 64 caracteres hexadecimais é usada uma PSK de 256 bits. Entre 8 e 63 caracteres funciona como passphrase hexadecimal ASCII.</span></div>
   </div>
 </section>
@@ -124,7 +124,7 @@ button,input,select{font:inherit}.shell{max-width:1180px;margin:auto;padding:28p
 </aside>
 </div>
 
-<div class="footer">Nenhuma password é guardada em localStorage, URL ou histórico. A verificação HIBP é opcional.</div>
+<div class="footer">Nenhuma password é guardada em localStorage, URL ou histórico. A verificação HIBP é opcional.<div style="margin-top:8px">Piquinho Software — Crafted with altitude. Built with joy.</div></div>
 
 <section id="printCard">
   <h1>Cartão de emergência</h1>
@@ -135,97 +135,7 @@ button,input,select{font:inherit}.shell{max-width:1180px;margin:auto;padding:28p
 </section>
 </div>
 
-<script>
-'use strict';
-const $ = id => document.getElementById(id);
-const WORDS = [
-'gato','cao','leao','tigre','urso','lobo','raposa','coelho','cavalo','aguia','coruja','golfinho','abelha','formiga','cobra','tartaruga','esquilo','macaco','vermelho','azul','verde','amarelo','roxo','laranja','preto','branco','cinza','dourado','prateado','montanha','rio','mar','oceano','floresta','deserto','praia','ilha','vulcao','cascata','lago','campo','vale','colina','gruta','estrela','lua','sol','ceu','nuvem','chuva','neve','vento','trovao','mesa','cadeira','porta','janela','espelho','relogio','telefone','livro','caneta','papel','chave','fechadura','lampada','vela','garrafa','copo','prato','panela','faca','colher','garfo','mochila','carteira','oculos','pao','queijo','azeite','vinho','cafe','chocolate','mel','arroz','feijao','batata','tomate','cebola','alho','morango','banana','maca','pera','uva','melancia','ananas','limao','coco','canela','medico','professor','engenheiro','advogado','piloto','bombeiro','policia','cozinheiro','padeiro','pescador','agricultor','pintor','musico','escritor','jornalista','cientista','motorista','eletricista','canalizador','carpinteiro','grande','pequeno','forte','fraco','rapido','lento','alto','baixo','largo','estreito','quente','frio','doce','amargo','macio','duro','leve','pesado','claro','escuro','novo','velho','jovem','sabio','corajoso','cidade','aldeia','castelo','palacio','ponte','torre','farol','jardim','parque','escola','hospital','mercado','igreja','museu','teatro','estadio','porto','aeroporto','estacao','biblioteca',
-'cat','dog','lion','tiger','bear','wolf','fox','rabbit','horse','eagle','owl','whale','dolphin','spider','snake','turtle','mouse','squirrel','monkey','red','blue','green','yellow','purple','orange','black','white','gray','gold','silver','mountain','river','ocean','forest','desert','beach','island','volcano','waterfall','lake','field','valley','hill','cave','star','moon','sun','sky','cloud','rain','snow','wind','thunder','table','chair','door','window','mirror','clock','phone','book','paper','key','lock','lamp','candle','bottle','cup','plate','knife','spoon','fork','wallet','bread','cheese','coffee','honey','rice','beans','potato','tomato','onion','garlic','strawberry','apple','pear','grape','pineapple','lemon','coconut','doctor','teacher','engineer','pilot','writer','scientist','strong','quick','bright','quiet','castle','bridge','garden','school','market','museum','harbor'
-];
-const NAMES = ['antonio','maria','joao','jose','manuel','ana','francisco','carlos','pedro','paulo','luis','miguel','jorge','nuno','goncalo','diogo','tiago','sofia','ines','margarida','beatriz','catarina','carolina','matilde','alice','leonor','duarte','afonso','rodrigo','martim','santiago','lourenco','vitor','rui','hugo','bruno','ricardo','andre','daniel','john','james','michael','david','robert','mary','jennifer','linda','elizabeth','sarah','emma','olivia'];
-const COMMON = new Set(['123456','password','123456789','12345678','12345','111111','1234567','qwerty','abc123','password1','123123','football','iloveyou','admin','welcome','monkey','login','princess','qwertyuiop','passw0rd','starwars','dragon','master','hello','freedom','qazwsx','trustno1','123321','000000','1q2w3e4r','letmein','1234','asdf','hunter2','access','shadow','superman','batman','portugal','benfica','sporting','porto','lisboa','cristiano','ronaldo','futebol','minhasenha','senha123','admin123','welcome1','changeme']);
-const WORD_SET = new Set(WORDS.map(normalize));
-const NAME_SET = new Set(NAMES.map(normalize));
-const LEET = {'@':'a','4':'a','0':'o','3':'e','$':'s','5':'s','1':'i','!':'i','7':'t','+':'t'};
-const KEY_ROWS = ['qwertyuiop','asdfghjkl','zxcvbnm','1234567890','!@#$%^&*()'];
-const PROFILES = {
- online:{rate:1e3,note:'Cenário ilustrativo com rate limiting; muitos serviços permitem menos tentativas.'},
- wifi:{rate:5e5,note:'Estimativa de referência para WPA2/PBKDF2; varia com hardware e implementação.'},
- fast:{rate:1e11,note:'Exemplo para MD5, SHA‑1 ou NTLM em hardware moderno.'},
- slow:{rate:1e4,note:'Exemplo genérico; bcrypt, scrypt e Argon2 dependem fortemente dos parâmetros.'}
-};
-let activeTab='gen', genMode='custom', currentGenerated='', currentContext={}, separator='-', avoidAmbiguous=false, includeNums=false, wifiMode='hex', hibpEnabled=false, hibpRequestVersion=0;
-
-function normalize(v){return String(v).normalize('NFKD').replace(/\p{Diacritic}/gu,'').toLowerCase()}
-function deleet(v){return normalize(v).split('').map(c=>LEET[c]??c).join('')}
-function unique(v){return [...new Set(String(v))].join('')}
-function dedupeField(id){const el=$(id),clean=unique(el.value);if(el.value!==clean)el.value=clean;return clean}
-function secureRandomInt(max){if(!Number.isSafeInteger(max)||max<=0)throw new RangeError('Limite inválido');const range=0x100000000,limit=range-(range%max),buf=new Uint32Array(1);let x;do{crypto.getRandomValues(buf);x=buf[0]}while(x>=limit);return x%max}
-function choice(strOrArr){return strOrArr[secureRandomInt(strOrArr.length)]}
-function shuffle(arr){const a=[...arr];for(let i=a.length-1;i>0;i--){const j=secureRandomInt(i+1);[a[i],a[j]]=[a[j],a[i]]}return a}
-function setToggle(el,on){el.classList.toggle('on',on);el.setAttribute('aria-checked',String(on))}
-
-function groupsForCustom(){let lower='abcdefghijklmnopqrstuvwxyz',upper='ABCDEFGHIJKLMNOPQRSTUVWXYZ',digits='0123456789',symbols=unique($('symbolSet').value);const ambiguous=unique($('ambigSet').value);if(avoidAmbiguous){const amb=new Set(ambiguous);lower=[...lower].filter(c=>!amb.has(c)).join('');upper=[...upper].filter(c=>!amb.has(c)).join('');digits=[...digits].filter(c=>!amb.has(c)).join('');symbols=[...symbols].filter(c=>!amb.has(c)).join('')}const groups=[];if($('chkUpper').checked&&upper)groups.push(unique(upper));if($('chkLower').checked&&lower)groups.push(unique(lower));if($('chkDigits').checked&&digits)groups.push(unique(digits));if($('chkSymbols').checked&&symbols)groups.push(unique(symbols));return groups}
-function generateCustom(){const len=+$('lenSlider').value,groups=groupsForCustom();if(!groups.length)return{pw:'',guesses:0,detail:'Nenhum conjunto activo.'};const pool=unique(groups.join(''));let chars=groups.map(g=>choice(g));while(chars.length<len)chars.push(choice(pool));chars=shuffle(chars).slice(0,len);return{pw:chars.join(''),guesses:Math.pow(pool.length,len),detail:`${len} caracteres escolhidos aleatoriamente de ${pool.length} símbolos distintos.`}}
-function generatePassphrase(count=+$('wordCount').value){const parts=[];for(let i=0;i<count;i++){let w=choice(WORDS);w=w[0].toUpperCase()+w.slice(1);parts.push(w);if(includeNums&&i<count-1)parts.push(String(secureRandomInt(90)+10))}const wordEntropy=count*Math.log2(WORDS.length);const numEntropy=includeNums?(count-1)*Math.log2(90):0;return{pw:parts.join(separator),guesses:Math.pow(2,wordEntropy+numEntropy),detail:`${count} palavras aleatórias de uma lista local com ${WORDS.length} entradas${includeNums?' e números aleatórios entre palavras':''}.`}}
-const CONS='bcdfghjklmnprstvz',VOW='aeiou';
-function generatePronounceable(){const wordCount=+$('pronWordCount').value,syllablesPerWord=+$('syllablesPerWord').value,words=[];for(let w=0;w<wordCount;w++){let word='';for(let i=0;i<syllablesPerWord;i++)word+=choice(CONS)+choice(VOW);word=word[0].toUpperCase()+word.slice(1);words.push(word)}const suffix=String(secureRandomInt(90)+10),totalSyllables=wordCount*syllablesPerWord,guesses=Math.pow(CONS.length*VOW.length,totalSyllables)*90;return{pw:words.join('-')+'-'+suffix,guesses,detail:`${wordCount} palavras pronunciáveis com ${syllablesPerWord} sílabas CV cada (${CONS.length*VOW.length} possibilidades por sílaba) e um sufixo de 2 dígitos.`}}
-function generateWifi(){if(wifiMode==='hex'){const length=+$('wifiHexLength').value,alphabet='0123456789ABCDEF';let pw='';for(let i=0;i<length;i++)pw+=choice(alphabet);const rawPsk=length===64;return{pw,guesses:Math.pow(16,length),detail:rawPsk?'PSK hexadecimal de 256 bits, com 64 caracteres aleatórios.':`Passphrase hexadecimal ASCII com ${length} caracteres aleatórios (${length*4} bits teóricos).`}}const count=+$('wifiWordCount').value,oldSep=separator,oldNums=includeNums;separator='-';includeNums=false;const r=generatePassphrase(count);separator=oldSep;includeNums=oldNums;r.detail=`Passphrase Wi‑Fi com ${count} palavras aleatórias da lista local.`;return r}
-
-function regenerate(){let r;if(genMode==='custom')r=generateCustom();else if(genMode==='passphrase')r=generatePassphrase();else if(genMode==='pronounceable')r=generatePronounceable();else r=generateWifi();currentGenerated=r.pw;currentContext={source:'generated',guesses:r.guesses,detail:r.detail,mode:genMode};renderHighlighted($('genOutput'),currentGenerated);renderAnalysis(currentGenerated,currentContext)}
-function renderHighlighted(el,pw){el.replaceChildren();if(!pw){el.textContent='(selecciona pelo menos um conjunto válido)';return}for(const ch of pw){const s=document.createElement('span');s.textContent=ch;if(/[A-Z]/.test(ch))s.className='hl-upper';else if(/[a-z]/.test(ch))s.className='hl-lower';else if(/[0-9]/.test(ch))s.className='hl-digit';else if(/\s/.test(ch)){s.className='hl-space';s.textContent='·'}else s.className='hl-symbol';el.appendChild(s)}}
-
-function findKeyboard(pw){const s=normalize(pw);for(const row of KEY_ROWS){for(let i=0;i<=row.length-4;i++){const f=row.slice(i,i+4),b=[...f].reverse().join('');if(s.includes(f)||s.includes(b))return f}}return null}
-function findSequence(pw){for(let i=0;i<pw.length-2;i++){const a=pw.charCodeAt(i),b=pw.charCodeAt(i+1),c=pw.charCodeAt(i+2);if([a,b,c].every(x=>x>=48&&x<=57)&&((b-a===1&&c-b===1)||(a-b===1&&b-c===1)))return pw.slice(i,i+3)}return null}
-function findRepeat(pw){for(let i=0;i<pw.length-2;i++)if(pw[i]===pw[i+1]&&pw[i]===pw[i+2])return pw.slice(i,i+3);return null}
-function detectDate(pw){const s=normalize(pw);const candidates=[...s.matchAll(/(?:^|\D)(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{2,4})(?:\D|$)/g),...s.matchAll(/(?:^|\D)(\d{2})(\d{2})(\d{4})(?:\D|$)/g)];for(const m of candidates){let d=+m[1],mo=+m[2],y=+m[3];if(y<100)y+=y>=30?1900:2000;const dt=new Date(y,mo-1,d);if(dt.getFullYear()===y&&dt.getMonth()===mo-1&&dt.getDate()===d)return m[0].trim()}const year=s.match(/(?:19|20)\d{2}/);return year?year[0]:null}
-function tokenizeGuessModel(pw){const low=normalize(pw),clean=deleet(pw),alerts=[],details=[];let candidates=[];const brutePool=(/[a-z]/.test(pw)?26:0)+(/[A-Z]/.test(pw)?26:0)+(/\d/.test(pw)?10:0)+(/[^a-zA-Z0-9]/.test(pw)?32:0);const brute=Math.pow(Math.max(2,brutePool),pw.length);candidates.push({kind:'Pesquisa exaustiva',guesses:brute,detail:`${pw.length} caracteres × conjunto estimado de ${Math.max(2,brutePool)}.`});
-if(COMMON.has(low)||COMMON.has(clean)){candidates.push({kind:'Password comum',guesses:10,detail:'Correspondência na lista local de passwords muito comuns.'});alerts.push({level:'red',text:'Password extremamente comum ou mutação leet trivial.'})}
-const words=[...NAME_SET,...WORD_SET];for(const word of words){const idx=clean.indexOf(word);if(idx>=0&&word.length>=3){const before=clean.slice(0,idx),after=clean.slice(idx+word.length);const simple=/^[\d!@#$%^&*_.\-]{0,6}$/.test(before+after);if(simple){const rank=Math.max(10,words.indexOf(word)+1);let mutations=1;if(before||after)mutations*=Math.max(10,Math.pow(10,(before+after).replace(/\D/g,'').length)||20);const guesses=rank*mutations*4;candidates.push({kind:NAME_SET.has(word)?'Nome próprio + mutação':'Palavra + mutação',guesses,detail:`“${word}” detectada; custo aproximado por posição no dicionário e mutações simples.`});alerts.push({level:'red',text:`Padrão previsível: “${word}” combinada com uma mutação simples.`});break}}}
-const date=detectDate(pw);if(date){candidates.push({kind:'Data/ano',guesses:40000,detail:`Data ou ano detectado: ${date}.`});alerts.push({level:'orange',text:`Data ou ano previsível detectado (${date}).`})}
-const kb=findKeyboard(pw);if(kb){candidates.push({kind:'Sequência de teclado',guesses:50000,detail:`Sequência de teclado detectada: ${kb}.`});alerts.push({level:'yellow',text:`Sequência de teclado detectada (${kb}).`})}
-const seq=findSequence(pw);if(seq){candidates.push({kind:'Sequência numérica',guesses:100000,detail:`Sequência numérica detectada: ${seq}.`});alerts.push({level:'yellow',text:`Sequência numérica simples (${seq}).`})}
-const rep=findRepeat(pw);if(rep){candidates.push({kind:'Repetição',guesses:100000,detail:`Caracteres repetidos: ${rep}.`});alerts.push({level:'yellow',text:`Caracteres repetidos em sequência (${rep}).`})}
-if(clean!==low)details.push('Foram consideradas substituições leet simples.');const best=candidates.reduce((a,b)=>b.guesses<a.guesses?b:a);return{guesses:Math.max(1,best.guesses),alerts,best,details}}
-function analyze(pw,ctx){if(!pw)return{guesses:0,entropy:0,alerts:[],best:null,details:[]};if(ctx?.source==='generated'){return{guesses:ctx.guesses,entropy:Math.log2(ctx.guesses),alerts:[],best:{kind:'Geração criptográfica',detail:ctx.detail,guesses:ctx.guesses},details:['A estimativa usa o espaço de escolhas realmente utilizado pelo gerador.']}}const r=tokenizeGuessModel(pw);return{...r,entropy:Math.log2(r.guesses)}}
-function tier(bits){if(bits<18)return['Comprometida','var(--red)',5];if(bits<32)return['Muito fraca','var(--red)',20];if(bits<50)return['Fraca','var(--orange)',43];if(bits<70)return['Média','var(--yellow)',67];if(bits<90)return['Forte','var(--green)',86];return['Muito forte','var(--teal)',100]}
-function duration(sec){if(!isFinite(sec)||sec>1e30)return'praticamente incomensurável';if(sec<1)return'Instantâneo (< 1 s)';const units=[['século',3153600000],['ano',31536000],['mês',2592000],['dia',86400],['hora',3600],['minuto',60],['segundo',1]];for(const [name,n] of units)if(sec>=n){const v=sec/n,round=v>=100?Math.round(v):Math.round(v*10)/10;return`${round.toLocaleString('pt-PT')} ${name}${round===1?'':name==='mês'?'es':'s'}`}return'< 1 segundo'}
-function renderAnalysis(pw,ctx){const r=analyze(pw,ctx),[label,color,pct]=pw?tier(r.entropy):['—','var(--line)',0];$('entropyVal').textContent=pw?Math.round(r.entropy):'0';$('rating').textContent=label;$('rating').style.color=color;$('rating').style.borderColor=color;$('strengthFill').style.width=pct+'%';$('strengthFill').style.background=color;const circ=351.86;$('ringFg').style.stroke=color;$('ringFg').style.strokeDashoffset=circ-(circ*pct/100);$('strengthText').textContent=pw?`Custo estimado de ataque: ${r.entropy.toFixed(1)} bits.`:'Gera ou introduz uma password.';const profile=PROFILES[$('attackProfile').value],seconds=pw?r.guesses/profile.rate/2:0;$('attackTime').textContent=pw?duration(seconds):'—';$('attackNote').textContent=profile.note+' O valor mostrado é o tempo médio, assumindo a password a meio do espaço de pesquisa.';const alerts=$('alerts');alerts.replaceChildren();if(!pw){alerts.textContent='Sem dados.'}else if(!r.alerts.length){const d=document.createElement('div');d.className='note';d.textContent='Nenhum padrão fraco conhecido foi detectado.';alerts.appendChild(d)}else for(const a of r.alerts){const d=document.createElement('div');d.className='alert '+a.level;const i=document.createElement('span');i.textContent=a.level==='red'?'⛔':a.level==='orange'?'⚠️':'🔶';const t=document.createElement('span');t.textContent=a.text;d.append(i,t);alerts.appendChild(d)}if(!pw){$('details').textContent='Sem dados.'}else{const best=r.best;const lines=[`<strong>Estratégia mais barata:</strong> ${escapeHtml(best.kind)}`,`<strong>Hipóteses estimadas:</strong> ${formatGuesses(best.guesses)}`,`<strong>Fundamento:</strong> ${escapeHtml(best.detail)}`,...r.details.map(x=>escapeHtml(x))];$('details').innerHTML=lines.join('<br>')}if(activeTab==='an')updateBadges(pw)}
-function escapeHtml(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
-function formatGuesses(n){if(!isFinite(n)||n>1e18)return n.toExponential(2);return Math.round(n).toLocaleString('pt-PT')}
-function updateBadges(pw){[['bUpper',/[A-Z]/],['bLower',/[a-z]/],['bDigit',/[0-9]/],['bSymbol',/[^a-zA-Z0-9\s]/],['bSpace',/\s/],['bUnicode',/[^\x00-\x7F]/]].forEach(([id,re])=>$(id).classList.toggle('active',re.test(pw)))}
-function activeValue(){return activeTab==='gen'?currentGenerated:$('anInput').value}
-function refresh(){renderAnalysis(activeValue(),activeTab==='gen'?currentContext:{source:'human'})}
-
-async function copyText(text){if(!text)return;try{if(navigator.clipboard&&window.isSecureContext)await navigator.clipboard.writeText(text);else{const ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();if(!document.execCommand('copy'))throw new Error('Falha');ta.remove()}$('copyLabel').textContent='Copiado ✓';setTimeout(()=>$('copyLabel').textContent='Copiar',1300)}catch{$('copyLabel').textContent='Copia manualmente';setTimeout(()=>$('copyLabel').textContent='Copiar',1800)}}
-async function sha1Hex(text){const data=new TextEncoder().encode(text),hash=await crypto.subtle.digest('SHA-1',data);return[...new Uint8Array(hash)].map(b=>b.toString(16).padStart(2,'0')).join('').toUpperCase()}
-async function checkHIBP(){const pw=$('anInput').value;if(!pw)return;const requestVersion=++hibpRequestVersion,btn=$('hibpBtn'),box=$('hibpResult');btn.disabled=true;btn.textContent='A verificar…';box.innerHTML='<div class="alert info"><span>⏳</span><span>Consulta em curso.</span></div>';try{const hash=await sha1Hex(pw),prefix=hash.slice(0,5),suffix=hash.slice(5),controller=new AbortController(),timer=setTimeout(()=>controller.abort(),8000);let res;try{res=await fetch('https://api.pwnedpasswords.com/range/'+prefix,{headers:{'Add-Padding':'true'},cache:'no-store',signal:controller.signal})}finally{clearTimeout(timer)}if(requestVersion!==hibpRequestVersion||$('anInput').value!==pw)return;if(!res.ok)throw new Error('HTTP '+res.status);const text=await res.text();let count=0;for(const line of text.split(/\r?\n/)){const [s,c]=line.trim().split(':');if(s===suffix){count=Number(c)||0;break}}if(requestVersion!==hibpRequestVersion||$('anInput').value!==pw)return;if(count>0)box.innerHTML=`<div class="alert red"><span>⛔</span><span>Encontrada ${count.toLocaleString('pt-PT')} vezes no conjunto Pwned Passwords. Não a uses.</span></div>`;else box.innerHTML='<div class="alert info"><span>✓</span><span>Não encontrada no conjunto consultado. Isto não prova que seja segura.</span></div>'}catch(e){if(requestVersion===hibpRequestVersion&&$('anInput').value===pw)box.innerHTML='<div class="alert yellow"><span>⚠️</span><span>Consulta externa indisponível. A análise local continua válida.</span></div>'}finally{if(requestVersion===hibpRequestVersion){btn.disabled=false;btn.textContent='Verificar no conjunto Pwned Passwords'}}}
-
-$('ambigSet').value=`0Oo1lIL|/'\"\``;
-$('regenerateBtn').addEventListener('click',regenerate);$('copyBtn').addEventListener('click',()=>copyText(currentGenerated));$('clearBtn').addEventListener('click',()=>{currentGenerated='';$('genOutput').textContent='';renderAnalysis('',{})});
-$('printBtn').addEventListener('click',()=>{if(!currentGenerated)return;$('printPassword').textContent=currentGenerated;$('printDate').textContent=new Date().toLocaleString('pt-PT');$('printType').textContent=genMode;window.print()});
-$('tabGen').addEventListener('click',()=>{activeTab='gen';$('tabGen').classList.add('active');$('tabAn').classList.remove('active');$('generatorPanel').classList.remove('hidden');$('analyzerPanel').classList.add('hidden');refresh()});
-$('tabAn').addEventListener('click',()=>{activeTab='an';$('tabAn').classList.add('active');$('tabGen').classList.remove('active');$('analyzerPanel').classList.remove('hidden');$('generatorPanel').classList.add('hidden');refresh()});
-document.querySelectorAll('[data-mode]').forEach(b=>b.addEventListener('click',()=>{genMode=b.dataset.mode;document.querySelectorAll('[data-mode]').forEach(x=>x.classList.toggle('active-choice',x===b));['custom','passphrase','pronounceable','wifi'].forEach(m=>$('opts-'+m).classList.toggle('hidden',m!==genMode));regenerate()}));
-document.querySelectorAll('[data-sep]').forEach(b=>b.addEventListener('click',()=>{separator=b.dataset.sep;document.querySelectorAll('[data-sep]').forEach(x=>x.classList.toggle('active-choice',x===b));regenerate()}));
-document.querySelectorAll('[data-wifi]').forEach(b=>b.addEventListener('click',()=>{wifiMode=b.dataset.wifi;document.querySelectorAll('[data-wifi]').forEach(x=>x.classList.toggle('active-choice',x===b));$('wifiHexSize').classList.toggle('hidden',wifiMode!=='hex');$('wifiWordSize').classList.toggle('hidden',wifiMode!=='words');regenerate()}));
-$('toggleAmbig').addEventListener('click',()=>{avoidAmbiguous=!avoidAmbiguous;setToggle($('toggleAmbig'),avoidAmbiguous);$('ambigWrap').classList.toggle('hidden',!avoidAmbiguous);regenerate()});
-$('toggleNums').addEventListener('click',()=>{includeNums=!includeNums;setToggle($('toggleNums'),includeNums);regenerate()});
-$('toggleHibp').addEventListener('click',()=>{hibpEnabled=!hibpEnabled;setToggle($('toggleHibp'),hibpEnabled);$('hibpBtn').classList.toggle('hidden',!hibpEnabled);if(!hibpEnabled)$('hibpResult').replaceChildren()});$('hibpBtn').addEventListener('click',checkHIBP);
-$('visibilityBtn').addEventListener('click',()=>{$('anInput').type=$('anInput').type==='password'?'text':'password'});$('anInput').addEventListener('input',()=>{hibpRequestVersion++;$('hibpResult').replaceChildren();$('hibpBtn').disabled=false;$('hibpBtn').textContent='Verificar no conjunto Pwned Passwords';refresh()});$('attackProfile').addEventListener('change',refresh);
-['lenSlider','wordCount','pronWordCount','syllablesPerWord','wifiHexLength','wifiWordCount'].forEach(id=>$(id).addEventListener('input',()=>{const map={lenSlider:'lenVal',wordCount:'wordCountVal',pronWordCount:'pronWordCountVal',syllablesPerWord:'syllablesPerWordVal',wifiHexLength:'wifiHexLengthVal',wifiWordCount:'wifiWordCountVal'};$(map[id]).textContent=$(id).value;regenerate()}));
-['chkUpper','chkLower','chkDigits','chkSymbols'].forEach(id=>$(id).addEventListener('change',e=>{e.target.closest('.chip').classList.toggle('checked',e.target.checked);regenerate()}));['symbolSet','ambigSet'].forEach(id=>{$(id).addEventListener('input',regenerate);$(id).addEventListener('blur',()=>{dedupeField(id);regenerate()})});
-window.addEventListener('online',()=>{$('networkStatus').textContent='Online'});window.addEventListener('offline',()=>{$('networkStatus').textContent='Offline — análise local disponível'});$('networkStatus').textContent=navigator.onLine?'Online':'Offline — análise local disponível';
-regenerate();
-</script>
-  <script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('./service-worker.js')
-        .then(() => console.log('Service worker registado'))
-        .catch((err) => console.error('Erro ao registar service worker:', err));
-    });
-  }
-</script>
+<script src="wordlist.js"></script>
+<script src="app.js"></script>
 </body>
 </html>

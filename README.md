@@ -1,2 +1,6 @@
 # passking
-Gerador e analisador de passwords PWA
+Gerador e analisador de passwords PWA (offline, sem dependências externas).
+
+- Lista de palavras: EFF Large Wordlist (7776) em `wordlist.js`; substituível por outra lista com >=7776 palavras únicas.
+- CSP restrita por `<meta>`; único pedido de rede permitido: `api.pwnedpasswords.com` (opcional, k-anonymity).
+- Ao alterar ficheiros da app, incrementar `CACHE_NAME` em `service-worker.js`.
