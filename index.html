@@ -4,30 +4,71 @@
 <meta charset="UTF-8">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src https://api.pwnedpasswords.com; manifest-src 'self'; worker-src 'self'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="color-scheme" content="dark">
+<meta name="color-scheme" content="dark light">
 <title>PassKing — Gerador e Analisador de Passwords</title>
 
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<meta name="theme-color" content="#0f172a">
+<meta name="theme-color" id="themeColorMeta" content="#0b0e14">
 <style>
+/* Tokens fixos de badge de segurança (iguais em ambos os temas, contraste AA garantido) */
 :root{
-  --bg:#0b0e14;--surface:#12161f;--surface2:#1a2029;--line:#283040;
+  --badge-green-bg:#4ade80;--badge-green-fg:#052e16;
+  --badge-yellow-bg:#facc15;--badge-yellow-fg:#422006;
+  --badge-red-bg:#f87171;--badge-red-fg:#450a0a;
+  --badge-neutral-bg:#283040;--badge-neutral-fg:#929bad;
+}
+/* Tema escuro (por omissão) */
+:root,:root[data-theme="dark"]{
+  --bg:#0b0e14;--surface:#12161f;--surface2:#1a2029;--surface3:#212939;--line:#283040;
   --brass:#c9a24b;--brass2:#e4c77a;--teal:#22d3a5;--red:#e5484d;
   --orange:#f2994e;--yellow:#f0c93e;--green:#4ade80;--ink:#e7e9ee;
-  --dim:#929bad;--blue:#60a5fa;--purple:#c084fc;
+  --dim:#929bad;--blue:#60a5fa;--purple:#c084fc;--onbrass:#1a1303;
+}
+/* Tema claro — Material You, mesma semente âmbar, contraste AA nos dois sentidos */
+:root[data-theme="light"]{
+  --bg:#fdf8ef;--surface:#fffaf0;--surface2:#f2e9d6;--surface3:#ece0c6;--line:#d8cca8;
+  --brass:#8a6417;--brass2:#6b4e0e;--teal:#0f8f6f;--red:#c22a30;
+  --orange:#b45309;--yellow:#8a6d00;--green:#15803d;--ink:#241f12;
+  --dim:#6b6354;--blue:#1d4ed8;--purple:#7c3aed;--onbrass:#fff8ea;
 }
 *{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
-body{min-height:100vh;background:radial-gradient(1000px 600px at 10% -10%,rgba(201,162,75,.11),transparent 58%),radial-gradient(800px 500px at 100% 0,rgba(34,211,165,.08),transparent 50%),var(--bg)}
-button,input,select{font:inherit}.shell{max-width:1180px;margin:auto;padding:28px 18px 40px}.header{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:24px}.brand{display:flex;gap:12px;align-items:center}.logo{width:46px;height:46px;border:1px solid var(--line);border-radius:14px;display:grid;place-items:center;background:linear-gradient(135deg,rgba(201,162,75,.18),rgba(201,162,75,.02))}.title{font-family:Georgia,serif;font-size:30px;margin:0}.muted{color:var(--dim)}.small{font-size:12px}.status-pill{border:1px solid var(--line);border-radius:999px;padding:7px 11px;font-size:12px;display:flex;gap:7px;align-items:center}.dot-online{width:7px;height:7px;border-radius:50%;background:var(--teal)}
-.tabs{display:flex;gap:22px;border-bottom:1px solid var(--line);margin-bottom:22px}.tab{background:none;border:0;color:var(--dim);padding:0 0 11px;cursor:pointer;border-bottom:2px solid transparent;font-family:Georgia,serif;font-size:18px}.tab.active{color:var(--brass2);border-bottom-color:var(--brass)}
-.grid{display:grid;grid-template-columns:minmax(0,3fr) minmax(300px,2fr);gap:22px}.panel{background:linear-gradient(180deg,var(--surface),var(--surface2));border:1px solid var(--line);border-radius:16px;padding:20px}.sticky{position:sticky;top:18px}.row{display:flex;align-items:center;gap:10px}.between{justify-content:space-between}.wrap{flex-wrap:wrap}.gap8{gap:8px}.stack>*+*{margin-top:14px}.hidden{display:none!important}
-.mode-btn,.chip,.seg-btn,.hash-btn,.btn{border:1px solid var(--line);background:var(--surface2);color:var(--ink);border-radius:10px;padding:9px 12px;cursor:pointer;transition:.18s}.mode-btn,.seg-btn,.hash-btn{font-size:13px}.active-choice{border-color:var(--brass)!important;color:var(--brass2)!important;background:rgba(201,162,75,.08)!important}.btn:hover,.mode-btn:hover,.seg-btn:hover,.hash-btn:hover{border-color:var(--brass)}.btn.primary{border-color:var(--brass)}.btn.teal{border-color:var(--teal)}.btn.danger{border-color:var(--red)}.btn:disabled{opacity:.45;cursor:not-allowed}
-.output{display:flex;align-items:center;min-height:62px;padding:14px 15px;border:1px solid var(--line);border-radius:13px;background:var(--surface2);overflow-wrap:anywhere}.mono{font-family:ui-monospace,"SFMono-Regular",Consolas,monospace}.password{font-size:20px;line-height:1.5;flex:1}.hl-upper{color:var(--green);font-weight:700}.hl-lower{color:var(--blue)}.hl-digit{color:var(--orange);font-weight:700}.hl-symbol{color:var(--purple);font-weight:700}.hl-space{color:var(--yellow);text-decoration:underline dotted}
-.actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-top:10px}.field{width:100%;padding:10px 11px;border:1px solid var(--line);border-radius:10px;background:var(--surface2);color:var(--ink);outline:none}.field:focus{border-color:var(--brass)}label{display:block;font-size:13px;color:var(--dim);margin-bottom:7px}input[type=range]{width:100%;accent-color:var(--brass)}.check-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.chip{display:flex;align-items:center;gap:8px;font-size:13px}.chip.checked{border-color:var(--brass);background:rgba(201,162,75,.08)}.toggle{width:44px;height:26px;border-radius:999px;border:0;background:var(--line);position:relative;cursor:pointer}.toggle::after{content:"";position:absolute;width:20px;height:20px;left:3px;top:3px;border-radius:50%;background:#cfd4de;transition:.18s}.toggle.on{background:rgba(34,211,165,.35)}.toggle.on::after{left:21px;background:var(--teal)}
+body{min-height:100vh;background:radial-gradient(1000px 600px at 10% -10%,rgba(201,162,75,.11),transparent 58%),radial-gradient(800px 500px at 100% 0,rgba(34,211,165,.08),transparent 50%),var(--bg);transition:background .2s,color .2s}
+button,input,select{font:inherit}.shell{max-width:1180px;margin:auto;padding:22px 18px 40px}.header{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:18px}.brand{display:flex;gap:12px;align-items:center}.logo{width:42px;height:42px;border:1px solid var(--line);border-radius:14px;display:grid;place-items:center;background:linear-gradient(135deg,rgba(201,162,75,.18),rgba(201,162,75,.02))}.title{font-family:Georgia,serif;font-size:26px;margin:0}.muted{color:var(--dim)}.small{font-size:12px}.status-pill{border:1px solid var(--line);border-radius:999px;padding:7px 11px;font-size:12px;display:flex;gap:7px;align-items:center}.dot-online{width:7px;height:7px;border-radius:50%;background:var(--teal)}
+.header-actions{display:flex;align-items:center;gap:8px}.theme-btn{width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:var(--surface2);color:var(--ink);display:grid;place-items:center;cursor:pointer;font-size:15px;flex:0 0 auto}.theme-btn:hover{border-color:var(--brass)}
+.tabs{display:flex;gap:22px;border-bottom:1px solid var(--line);margin-bottom:18px}.tab{background:none;border:0;color:var(--dim);padding:0 0 11px;cursor:pointer;border-bottom:2px solid transparent;font-family:Georgia,serif;font-size:17px}.tab.active{color:var(--brass2);border-bottom-color:var(--brass)}
+.panel{background:linear-gradient(180deg,var(--surface),var(--surface2));border:1px solid var(--line);border-radius:18px;padding:16px}.row{display:flex;align-items:center;gap:10px}.between{justify-content:space-between}.wrap{flex-wrap:wrap}.gap8{gap:8px}.stack>*+*{margin-top:12px}.hidden{display:none!important}
+.segmented{display:flex;gap:3px;padding:3px;background:var(--surface2);border:1px solid var(--line);border-radius:999px}.segmented .mode-btn{flex:1;text-align:center;border:0;background:transparent;border-radius:999px;padding:9px 4px;font-size:12.5px;white-space:nowrap}
+.mode-btn,.chip,.seg-btn,.hash-btn,.btn{border:1px solid var(--line);background:var(--surface2);color:var(--ink);border-radius:12px;padding:9px 12px;cursor:pointer;transition:.18s}.mode-btn,.seg-btn,.hash-btn{font-size:13px}.active-choice{border-color:var(--brass)!important;color:var(--brass2)!important;background:rgba(201,162,75,.08)!important}.segmented .active-choice{background:var(--brass)!important;color:var(--onbrass)!important;font-weight:600}.btn:hover,.mode-btn:hover,.seg-btn:hover,.hash-btn:hover{border-color:var(--brass)}.btn.primary{border-color:var(--brass)}.btn.teal{border-color:var(--teal)}.btn.danger{border-color:var(--red)}.btn:disabled{opacity:.45;cursor:not-allowed}
+.output{display:flex;align-items:center;min-height:56px;padding:12px 14px;border:1px solid var(--line);border-radius:14px;background:var(--surface2);overflow-wrap:anywhere}.mono{font-family:ui-monospace,"SFMono-Regular",Consolas,monospace}.password{font-size:19px;line-height:1.5;flex:1}.hl-upper{color:var(--green);font-weight:700}.hl-lower{color:var(--blue)}.hl-digit{color:var(--orange);font-weight:700}.hl-symbol{color:var(--purple);font-weight:700}.hl-space{color:var(--yellow);text-decoration:underline dotted}
+/* Badge de segurança de 3 estados (verde/amarelo/vermelho), junto às caixas de password */
+.sec-badge{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:0 13px;height:38px;font-size:12.5px;font-weight:700;border:0;cursor:pointer;white-space:nowrap;flex:0 0 auto}
+.sec-badge .dot{width:7px;height:7px;border-radius:50%;background:currentColor;flex:0 0 auto}
+.sec-badge.neutral{background:var(--badge-neutral-bg);color:var(--badge-neutral-fg);cursor:default}
+.sec-badge.green{background:var(--badge-green-bg);color:var(--badge-green-fg)}
+.sec-badge.yellow{background:var(--badge-yellow-bg);color:var(--badge-yellow-fg)}
+.sec-badge.red{background:var(--badge-red-bg);color:var(--badge-red-fg)}
+span.sec-badge{cursor:default}
+.actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-top:10px}.field{width:100%;padding:10px 11px;border:1px solid var(--line);border-radius:12px;background:var(--surface2);color:var(--ink);outline:none}.field:focus{border-color:var(--brass)}label{display:block;font-size:13px;color:var(--dim);margin-bottom:7px}input[type=range]{width:100%;accent-color:var(--brass)}.check-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.chip{display:flex;align-items:center;gap:8px;font-size:13px}.chip.checked{border-color:var(--brass);background:rgba(201,162,75,.08)}.toggle{width:44px;height:26px;border-radius:999px;border:0;background:var(--line);position:relative;cursor:pointer}.toggle::after{content:"";position:absolute;width:20px;height:20px;left:3px;top:3px;border-radius:50%;background:#cfd4de;transition:.18s}.toggle.on{background:rgba(34,211,165,.35)}.toggle.on::after{left:21px;background:var(--teal)}
+/* Disclosures compactas: opções avançadas e notas informativas, fechadas por omissão */
+details.disclosure{border:1px solid var(--line);border-radius:12px;background:var(--surface2)}
+details.disclosure summary{cursor:pointer;padding:10px 12px;font-size:13px;list-style:none;display:flex;align-items:center;gap:8px;user-select:none}
+details.disclosure summary::-webkit-details-marker{display:none}
+details.disclosure summary::before{content:'▸';font-size:11px;color:var(--dim);transition:.15s}
+details.disclosure[open] summary::before{content:'▾'}
+details.disclosure .disclosure-body{padding:0 12px 12px;font-size:12.5px;color:var(--dim);line-height:1.5}
 .badges{display:flex;gap:6px;flex-wrap:wrap}.badge{font-size:11px;padding:3px 8px;border:1px solid var(--line);border-radius:7px;color:var(--dim);background:var(--surface2)}.badge.active{border-color:var(--teal);color:var(--teal);background:rgba(34,211,165,.08)}
-.gauge{display:flex;align-items:center;gap:18px}.ring{width:132px;height:132px;position:relative;flex:0 0 auto}.ring svg{transform:rotate(-90deg)}.ring-bg,.ring-fg{fill:none;stroke-width:9}.ring-bg{stroke:var(--line)}.ring-fg{stroke-linecap:round;transition:.3s}.ring-center{position:absolute;inset:0;display:grid;place-content:center;text-align:center}.entropy{font-size:26px}.track{height:10px;background:var(--line);border-radius:999px;overflow:hidden}.fill{height:100%;width:0;transition:.3s}.rating{font-size:12px;border:1px solid var(--line);border-radius:999px;padding:5px 9px}.time-card,.detail-card{border:1px solid var(--line);background:var(--surface2);border-radius:12px;padding:12px}.time-grid{display:grid;gap:9px}.alert{border:1px solid;border-radius:10px;padding:10px 12px;display:flex;gap:8px;font-size:13px}.alert.red{border-color:rgba(229,72,77,.5);background:rgba(229,72,77,.08);color:#ffb3b5}.alert.orange{border-color:rgba(242,153,78,.5);background:rgba(242,153,78,.08);color:#ffc98d}.alert.yellow{border-color:rgba(240,201,62,.5);background:rgba(240,201,62,.08);color:#f4df91}.alert.info{border-color:rgba(96,165,250,.5);background:rgba(96,165,250,.08);color:#bfd7ff}.detail-list{font-size:12px;color:var(--dim);line-height:1.55}.detail-list strong{color:var(--ink)}.footer{text-align:center;font-size:12px;color:var(--dim);margin-top:28px}.note{font-size:12px;color:var(--dim);line-height:1.45}.section-title{font-family:Georgia,serif;font-size:18px;margin:0}.subtle-line{border-top:1px solid var(--line);padding-top:14px}.select{padding:8px 9px;border-radius:9px;background:var(--surface2);color:var(--ink);border:1px solid var(--line)}
-@media(max-width:860px){.grid{grid-template-columns:1fr}.sticky{position:static}.status-pill{display:none}.header{align-items:flex-start}.title{font-size:26px}}@media(max-width:560px){.check-grid,.actions{grid-template-columns:1fr}.panel{padding:16px}.gauge{align-items:flex-start}.ring{width:112px;height:112px}.ring svg{width:112px;height:112px}.shell{padding:20px 12px 30px}}
+.av-grid{display:grid;gap:14px}@media(min-width:861px){.av-grid{grid-template-columns:1fr 1fr;align-items:start}}
+.gauge{display:flex;align-items:center;gap:18px}.ring{width:120px;height:120px;position:relative;flex:0 0 auto}.ring svg{transform:rotate(-90deg)}.ring-bg,.ring-fg{fill:none;stroke-width:9}.ring-bg{stroke:var(--line)}.ring-fg{stroke-linecap:round;transition:.3s}.ring-center{position:absolute;inset:0;display:grid;place-content:center;text-align:center}.entropy{font-size:24px}.track{height:10px;background:var(--line);border-radius:999px;overflow:hidden}.fill{height:100%;width:0;transition:.3s}.rating{font-size:12px;border:1px solid var(--line);border-radius:999px;padding:5px 9px}.time-card,.detail-card{border:1px solid var(--line);background:var(--surface2);border-radius:12px;padding:12px}.time-grid{display:grid;gap:9px}.alert{border:1px solid;border-radius:10px;padding:10px 12px;display:flex;gap:8px;font-size:13px}.alert.red{border-color:rgba(229,72,77,.5);background:rgba(229,72,77,.08);color:#ffb3b5}.alert.orange{border-color:rgba(242,153,78,.5);background:rgba(242,153,78,.08);color:#ffc98d}.alert.yellow{border-color:rgba(240,201,62,.5);background:rgba(240,201,62,.08);color:#f4df91}.alert.info{border-color:rgba(96,165,250,.5);background:rgba(96,165,250,.08);color:#bfd7ff}
+:root[data-theme="light"] .alert.red{color:#7a1317}:root[data-theme="light"] .alert.orange{color:#5c3209}:root[data-theme="light"] .alert.yellow{color:#4a3a00}:root[data-theme="light"] .alert.info{color:#0b2e75}
+.detail-list{font-size:12px;color:var(--dim);line-height:1.55}.detail-list strong{color:var(--ink)}.footer{text-align:center;font-size:12px;color:var(--dim);margin-top:22px}.note{font-size:12px;color:var(--dim);line-height:1.45}.section-title{font-family:Georgia,serif;font-size:17px;margin:0}.subtle-line{border-top:1px solid var(--line);padding-top:14px}.select{padding:8px 9px;border-radius:9px;background:var(--surface2);color:var(--ink);border:1px solid var(--line)}
+#alerts{max-height:190px;overflow-y:auto;padding-right:4px}
+/* Navegação inferior fixa — prioridade ao telemóvel */
+.bottomnav{display:none;position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--surface3);border-top:1px solid var(--line);padding:6px max(6px,env(safe-area-inset-left)) max(6px,env(safe-area-inset-bottom));gap:4px}
+.bn-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;border:0;background:transparent;color:var(--dim);padding:6px 4px;border-radius:12px;font-size:11px;cursor:pointer}
+.bn-btn .bn-ic{font-size:18px;line-height:1}.bn-btn.active{color:var(--brass2);background:rgba(201,162,75,.1)}
+@media(max-width:860px){.status-pill{display:none}.header{align-items:flex-start}.title{font-size:23px}.tabs{display:none}.bottomnav{display:flex}body{padding-bottom:70px}}
+@media(max-width:560px){.check-grid,.actions{grid-template-columns:1fr}.panel{padding:14px}.gauge{align-items:flex-start}.ring{width:104px;height:104px}.ring svg{width:104px;height:104px}.shell{padding:16px 12px 30px}}
 @page{size:A4 portrait;margin:12mm}@media print{html,body{width:210mm;height:auto;margin:0!important;padding:0!important;background:white!important;color:black!important}.shell{max-width:none!important;margin:0!important;padding:0!important}.shell>*:not(#printCard){display:none!important}#printCard{display:block!important;width:100%;max-height:273mm;overflow:hidden;color:black;background:white;border:0;padding:0;font-family:Georgia,serif;break-inside:avoid;page-break-inside:avoid}#printCard h1{font-size:22pt;margin:0 0 5mm}#printCard p{font-size:11pt;line-height:1.35;margin:4mm 0}#printCard .print-password{font-family:ui-monospace,monospace;font-size:16pt;line-height:1.35;overflow-wrap:anywhere;word-break:break-word;border:1px solid #777;padding:8mm;margin:7mm 0;break-inside:avoid;page-break-inside:avoid}.no-print{display:none!important}}
 #printCard{display:none}
 </style>
@@ -35,26 +76,31 @@ button,input,select{font:inherit}.shell{max-width:1180px;margin:auto;padding:28p
 <body>
 <div class="shell">
 <header class="header">
-  <div class="brand"><div class="logo" aria-hidden="true">♛</div><div><h1 class="title">Pass<span style="color:var(--brass2)">King</span></h1><div class="small muted">Gerador e analisador avançado — processamento local por defeito</div></div></div>
-  <div class="status-pill"><span class="dot-online"></span><span id="networkStatus">Pronto</span></div>
+  <div class="brand"><div class="logo" aria-hidden="true">♛</div><h1 class="title">Pass<span style="color:var(--brass2)">King</span></h1></div>
+  <div class="header-actions">
+    <div class="status-pill"><span class="dot-online"></span><span id="networkStatus">Pronto</span></div>
+    <button class="theme-btn" id="themeBtn" type="button" aria-label="Alternar entre tema claro e escuro">🌙</button>
+  </div>
 </header>
 
 <nav class="tabs" aria-label="Secções">
-  <button class="tab active" id="tabGen" type="button">Gerador</button>
-  <button class="tab" id="tabAn" type="button">Analisador</button>
+  <button class="tab active" data-tab="gen" type="button">Gerador</button>
+  <button class="tab" data-tab="an" type="button">Avaliação de segurança</button>
 </nav>
 
-<div class="grid">
 <main class="stack">
 <section class="panel" id="generatorPanel">
-  <div class="row wrap gap8" style="margin-bottom:16px">
+  <div class="segmented" style="margin-bottom:14px">
     <button class="mode-btn active-choice" data-mode="custom" type="button">Personalizada</button>
     <button class="mode-btn" data-mode="passphrase" type="button">Passphrase</button>
     <button class="mode-btn" data-mode="pronounceable" type="button">Pronunciável</button>
-    <button class="mode-btn" data-mode="wifi" type="button">Modo Wi‑Fi</button>
+    <button class="mode-btn" data-mode="wifi" type="button">Wi‑Fi</button>
   </div>
 
-  <div class="output"><div id="genOutput" class="password mono" aria-live="polite"></div></div>
+  <div class="row gap8" style="align-items:stretch">
+    <div class="output" style="flex:1"><div id="genOutput" class="password mono" aria-live="polite"></div></div>
+    <button class="sec-badge neutral" id="secBadgeGen" type="button" title="Ver avaliação de segurança"><span class="dot" aria-hidden="true"></span><span class="lbl">—</span></button>
+  </div>
   <div class="actions">
     <button class="btn primary" id="regenerateBtn" type="button">↻ Gerar nova</button>
     <button class="btn teal" id="copyBtn" type="button">⧉ <span id="copyLabel">Copiar</span></button>
@@ -62,7 +108,10 @@ button,input,select{font:inherit}.shell{max-width:1180px;margin:auto;padding:28p
     <button class="btn danger" id="clearBtn" type="button">Limpar</button>
   </div>
 
-  <div id="opts-custom" class="stack" style="margin-top:18px">
+  <details class="disclosure" style="margin-top:14px">
+  <summary>⚙️ Opções avançadas</summary>
+  <div class="disclosure-body">
+  <div id="opts-custom" class="stack">
     <div><div class="row between"><label for="lenSlider">Comprimento</label><span id="lenVal" class="mono" style="color:var(--brass2)">20</span></div><input id="lenSlider" type="range" min="8" max="64" value="20"></div>
     <div class="check-grid">
       <label class="chip checked"><input id="chkUpper" type="checkbox" checked> Maiúsculas</label>
@@ -75,60 +124,69 @@ button,input,select{font:inherit}.shell{max-width:1180px;margin:auto;padding:28p
     <div id="ambigWrap" class="hidden"><label for="ambigSet">Caracteres ambíguos</label><input class="field mono" id="ambigSet"></div>
   </div>
 
-  <div id="opts-passphrase" class="stack hidden" style="margin-top:18px">
+  <div id="opts-passphrase" class="stack hidden">
     <div><div class="row between"><label for="wordCount">Número de palavras</label><span id="wordCountVal" class="mono" style="color:var(--brass2)">6</span></div><input id="wordCount" type="range" min="4" max="10" value="6"></div>
     <div><label>Separador</label><div class="row wrap gap8"><button class="seg-btn active-choice" data-sep="-" type="button">hífen</button><button class="seg-btn" data-sep="." type="button">ponto</button><button class="seg-btn" data-sep="_" type="button">underscore</button><button class="seg-btn" data-sep=" " type="button">espaço</button></div></div>
     <div class="row between"><div><div style="font-size:13px">Números entre palavras</div><div class="note">Acrescenta dois dígitos entre cada palavra.</div></div><button class="toggle" id="toggleNums" role="switch" aria-checked="false" type="button"></button></div>
   </div>
 
-  <div id="opts-pronounceable" class="stack hidden" style="margin-top:18px">
+  <div id="opts-pronounceable" class="stack hidden">
     <div><div class="row between"><label for="pronWordCount">Número de palavras</label><span id="pronWordCountVal" class="mono" style="color:var(--brass2)">4</span></div><input id="pronWordCount" type="range" min="2" max="8" value="4"></div>
     <div><div class="row between"><label for="syllablesPerWord">Tamanho de cada palavra</label><span class="mono" style="color:var(--brass2)"><span id="syllablesPerWordVal">3</span> sílabas</span></div><input id="syllablesPerWord" type="range" min="1" max="5" value="3"></div>
-    <div class="alert info"><span>ℹ️</span><span>Palavras mais longas e em maior número aumentam a resistência. Este modo privilegia memorização e facilidade de ditado.</span></div>
+    <details class="disclosure"><summary>ℹ️ Sobre este modo</summary><div class="disclosure-body">Palavras mais longas e em maior número aumentam a resistência. Este modo privilegia memorização e facilidade de ditado.</div></details>
   </div>
 
-  <div id="opts-wifi" class="stack hidden" style="margin-top:18px">
+  <div id="opts-wifi" class="stack hidden">
     <div class="row wrap gap8"><button class="mode-btn active-choice" data-wifi="hex" type="button">Chave hexadecimal</button><button class="mode-btn" data-wifi="words" type="button">Passphrase Wi‑Fi</button></div>
     <div id="wifiHexSize"><div class="row between"><label for="wifiHexLength">Comprimento hexadecimal</label><span id="wifiHexLengthVal" class="mono" style="color:var(--brass2)">64</span></div><input id="wifiHexLength" type="range" min="8" max="64" value="64"></div>
     <div id="wifiWordSize" class="hidden"><div class="row between"><label for="wifiWordCount">Número de palavras</label><span id="wifiWordCountVal" class="mono" style="color:var(--brass2)">8</span></div><input id="wifiWordCount" type="range" min="4" max="9" value="8"></div>
-    <div class="alert info"><span>ℹ️</span><span>Com 64 caracteres hexadecimais é usada uma PSK de 256 bits. Entre 8 e 63 caracteres funciona como passphrase hexadecimal ASCII.</span></div>
+    <details class="disclosure"><summary>ℹ️ Sobre o modo Wi‑Fi</summary><div class="disclosure-body">Com 64 caracteres hexadecimais é usada uma PSK de 256 bits. Entre 8 e 63 caracteres funciona como passphrase hexadecimal ASCII.</div></details>
   </div>
+  </div>
+  </details>
 </section>
 
 <section class="panel hidden" id="analyzerPanel">
-  <label for="anInput">Introduz uma password para análise</label>
-  <div class="output"><input class="field mono" style="border:0;padding:0;font-size:18px" id="anInput" type="password" autocomplete="off" spellcheck="false" placeholder="Escreve ou cola aqui..."><button class="btn" id="visibilityBtn" type="button" aria-label="Mostrar ou ocultar password">👁</button></div>
-  <div class="badges" style="margin-top:10px"><span class="badge" id="bUpper">A-Z</span><span class="badge" id="bLower">a-z</span><span class="badge" id="bDigit">0-9</span><span class="badge" id="bSymbol">!@#</span><span class="badge" id="bSpace">Espaços</span><span class="badge" id="bUnicode">Unicode</span></div>
-  <div class="subtle-line" style="margin-top:16px">
-    <div class="row between"><div><div style="font-size:13px">Verificar no Have I Been Pwned</div><div class="note">Pedido explícito; nunca é feito enquanto escreves.</div></div><button class="toggle" id="toggleHibp" role="switch" aria-checked="false" type="button"></button></div>
-    <button class="btn teal hidden" id="hibpBtn" type="button" style="margin-top:10px;width:100%">Verificar no conjunto Pwned Passwords</button>
-    <div id="hibpResult" style="margin-top:10px"></div>
+  <div class="av-grid">
+  <div class="stack">
+    <div><label for="anInput">Password a avaliar</label>
+    <div class="row gap8" style="align-items:stretch">
+      <div class="output" style="flex:1"><input class="field mono" style="border:0;padding:0;font-size:17px;background:transparent" id="anInput" type="password" autocomplete="off" spellcheck="false" placeholder="Escreve ou cola aqui..."><button class="btn" id="visibilityBtn" type="button" aria-label="Mostrar ou ocultar password">👁</button></div>
+      <span class="sec-badge neutral" id="secBadgeAn" role="status"><span class="dot" aria-hidden="true"></span><span class="lbl">—</span></span>
+    </div></div>
+    <div class="badges"><span class="badge" id="bUpper">A-Z</span><span class="badge" id="bLower">a-z</span><span class="badge" id="bDigit">0-9</span><span class="badge" id="bSymbol">!@#</span><span class="badge" id="bSpace">Espaços</span><span class="badge" id="bUnicode">Unicode</span></div>
+    <div class="subtle-line">
+      <div class="row between"><div><div style="font-size:13px">Verificar no Have I Been Pwned</div><div class="note">Pedido explícito; nunca é feito enquanto escreves.</div></div><button class="toggle" id="toggleHibp" role="switch" aria-checked="false" type="button" aria-label="Activar verificação HIBP"></button></div>
+      <button class="btn teal hidden" id="hibpBtn" type="button" style="margin-top:10px;width:100%">Verificar no conjunto Pwned Passwords</button>
+      <div id="hibpResult" style="margin-top:10px"></div>
+      <details class="disclosure" style="margin-top:10px"><summary>ℹ️ Como funciona a verificação</summary><div class="disclosure-body">Apenas é enviado um prefixo de 5 caracteres do hash SHA‑1 da password, com padding activado (k‑anonymity). A API devolve todos os sufixos com esse prefixo e a comparação é feita no browser.</div></details>
+    </div>
   </div>
-  <div class="alert info" style="margin-top:14px"><span>🔒</span><span>A análise local não envia a password para nenhum servidor. Na verificação HIBP, apenas é enviado um prefixo de 5 caracteres do hash SHA‑1, com padding activado.</span></div>
+  <div class="stack">
+    <div class="row between"><h2 class="section-title">Avaliação</h2><span id="rating" class="rating">—</span></div>
+    <div class="gauge">
+      <div class="ring"><svg width="120" height="120" viewBox="0 0 132 132"><circle class="ring-bg" cx="66" cy="66" r="56"></circle><circle id="ringFg" class="ring-fg" cx="66" cy="66" r="56" stroke-dasharray="351.86" stroke-dashoffset="351.86"></circle></svg><div class="ring-center"><div id="entropyVal" class="entropy mono">0</div><div class="small muted">BITS</div></div></div>
+      <div style="flex:1"><div class="track"><div id="strengthFill" class="fill"></div></div><div id="strengthText" class="note" style="margin-top:8px">Gera ou introduz uma password.</div></div>
+    </div>
+    <div><label for="attackProfile">Perfil de ataque</label><select id="attackProfile" class="select" style="width:100%"><option value="fast" selected>Hash rápido offline — 100 mil milhões/s (pior cenário)</option><option value="wifi">Router/Wi‑Fi WPA2 — 500 000/s</option><option value="slow">Hash lento offline — 10 000/s</option><option value="online">Online com rate limiting — 1 000/s</option></select></div>
+    <div class="time-card"><div class="small muted">Tempo médio estimado até encontrar</div><div id="attackTime" class="mono" style="font-size:17px;margin-top:4px">—</div><div class="note" id="attackNote" style="margin-top:5px"></div></div>
+    <div><div class="small muted" style="margin-bottom:7px">Vulnerabilidades e detectores</div><div id="alerts" class="stack"></div></div>
+    <details class="disclosure"><summary>Detalhe da estimativa</summary><div class="disclosure-body"><div id="details" class="detail-list">Sem dados.</div></div></details>
+  </div>
+  </div>
 </section>
 </main>
 
-<aside>
-<section class="panel sticky stack">
-  <div class="row between"><h2 class="section-title">Avaliação de segurança</h2><span id="rating" class="rating">—</span></div>
-  <div class="gauge">
-    <div class="ring"><svg width="132" height="132" viewBox="0 0 132 132"><circle class="ring-bg" cx="66" cy="66" r="56"></circle><circle id="ringFg" class="ring-fg" cx="66" cy="66" r="56" stroke-dasharray="351.86" stroke-dashoffset="351.86"></circle></svg><div class="ring-center"><div id="entropyVal" class="entropy mono">0</div><div class="small muted">BITS ESTIMADOS</div></div></div>
-    <div style="flex:1"><div class="track"><div id="strengthFill" class="fill"></div></div><div id="strengthText" class="note" style="margin-top:8px">Gera ou introduz uma password.</div></div>
-  </div>
+<nav class="bottomnav" aria-label="Navegação principal">
+  <button class="bn-btn active" data-tab="gen" type="button"><span class="bn-ic" aria-hidden="true">🔑</span><span>Gerador</span></button>
+  <button class="bn-btn" data-tab="an" type="button"><span class="bn-ic" aria-hidden="true">🛡️</span><span>Avaliação</span></button>
+</nav>
 
-  <div><label for="attackProfile">Perfil de ataque</label><select id="attackProfile" class="select" style="width:100%"><option value="fast" selected>Hash rápido offline — 100 mil milhões/s (pior cenário)</option><option value="wifi">Router/Wi‑Fi WPA2 — 500 000/s</option><option value="slow">Hash lento offline — 10 000/s</option><option value="online">Online com rate limiting — 1 000/s</option></select></div>
-  <div class="time-card"><div class="small muted">Tempo médio estimado até encontrar</div><div id="attackTime" class="mono" style="font-size:18px;margin-top:4px">—</div><div class="note" id="attackNote" style="margin-top:5px"></div></div>
-  <div><div class="small muted" style="margin-bottom:7px">Vulnerabilidades e detectores</div><div id="alerts" class="stack"></div></div>
-  <div><div class="small muted" style="margin-bottom:7px">Detalhe da estimativa</div><div id="details" class="detail-card detail-list">Sem dados.</div></div>
-</section>
-</aside>
-</div>
-
-<div class="footer">Nenhuma password é guardada em localStorage, URL ou histórico. A verificação HIBP é opcional.<div style="margin-top:8px">Piquinho Software — Crafted with altitude. Built with joy.</div></div>
+<div class="footer">Piquinho Software — Crafted with altitude. Built with joy.</div>
 
 <section id="printCard">
   <h1>Cartão de emergência</h1>
-  <p>Credencial gerada localmente em <span id="printDate"></span>.</p>
+  <p>Credencial gerada em <span id="printDate"></span>.</p>
   <div class="print-password" id="printPassword"></div>
   <p>Tipo: <span id="printType"></span></p>
   <p><strong>Aviso:</strong> guarda este cartão num local físico seguro e separado do nome de utilizador e do segundo factor.</p>

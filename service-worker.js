@@ -1,4 +1,4 @@
-const CACHE_NAME = 'passking-v3';
+const CACHE_NAME = 'passking-v4';
 const FILES_TO_CACHE = ['./','./index.html','./app.js','./wordlist.js','./manifest.json','./icon-192.png','./icon-512.png','./icon-maskable-512.png','./apple-touch-icon.png'];
 self.addEventListener('install', (e) => { self.skipWaiting(); e.waitUntil(caches.open(CACHE_NAME).then((c) => c.addAll(FILES_TO_CACHE))); });
 self.addEventListener('activate', (e) => { e.waitUntil(caches.keys().then((ks) => Promise.all(ks.filter((k) => k !== CACHE_NAME).map((k) => caches.delete(k)))).then(() => self.clients.claim())); });
